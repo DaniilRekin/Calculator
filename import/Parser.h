@@ -1,124 +1,182 @@
 #pragma once
-#include <vector>
-#include <stdexcept>
 #include <cmath>
 #include <iostream>
+#include <stdexcept>
+#include <vector>
+
+#include "Exception.h"
+#include "Identifiers.h"
 #include "Token.h"
-#include "StaticIdentifiers.h"
 
 class Parser {
  private:
-  size_t pos = 0;
-  std::vector<Token> token;
+  size_t index;
+  std::vector<Token> tokens;
 
+  bool End() const { return index >= tokens.size(); }
+
+  void Step() { index++; }
+
+  const Token& Current() {
+    if (End()) {
+      throw Exception("Unexpected end of expression");
+    }
+
+    return tokens[index];
+  }
+
+ public:
+  Parser() : index(0) {}
+
+ public:
   // +, -
-  double Level1() {
-    double value = Level2();
-    OperatorType op = OperatorType::Undefined;
-    if (pos < token.size()) {
-    while (
-      op = std::get<OperatorType>(token[pos].val),
-      token[pos].type == TokenType::Operator && (
-        op == OperatorType::Plus || op == OperatorType::Minus
-      )) {
-        pos++;
-        double right = Level2();
-        value = (op == OperatorType::Plus? value + right : value - right);
-        if (pos >= token.size()) {
-          break;
-        }
+  double ParseAddition() {
+    double value = ParseMultiplication();
+
+    while (!End() && Current().IsOperator(OperatorType::Plus, OperatorType::Minus)) {
+      OperatorType act = Current().GetOperatorType();
+      Step();
+
+      double right = ParseMultiplication();
+
+      if (act == OperatorType::Plus) {
+        value += right;
+      } else {
+        value -= right;
       }
     }
+
     return value;
   }
 
   // *, /
-  double Level2() {
-    double value = Level3();
-    OperatorType op = OperatorType::Undefined;
-    if (pos < token.size()) {
-      while (
-      op = std::get<OperatorType>(token[pos].val),
-      token[pos].type == TokenType::Operator && (
-        op == OperatorType::Mult || op == OperatorType::Div
-      )) {
-        pos++;
-        double right = Level3();
-        value = (op == OperatorType::Mult? value * right : value / right);
-        if (pos >= token.size()) {
-          break;
-        }
+  double ParseMultiplication() {
+    double value = ParseUnary();
+
+    while (!End() && Current().IsOperator(OperatorType::Mult, OperatorType::Div)) {
+      OperatorType act = Current().GetOperatorType();
+      Step();
+
+      double right = ParseUnary();
+
+      if (act == OperatorType::Mult) {
+        value *= right;
+      } else {
+        value /= right;
       }
     }
+
     return value;
+  }
+
+  // +x, -x
+  // Важно: unary ниже степени
+  double ParseUnary() {
+    if (!End() && Current().IsOperator(OperatorType::Plus, OperatorType::Minus)) {
+      OperatorType act = Current().GetOperatorType();
+      Step();
+
+      double value = ParseUnary();
+
+      if (act == OperatorType::Minus) {
+        return -value;
+      }
+
+      return value;
+    }
+
+    return ParsePower();
   }
 
   // ^
-  double Level3() {
-    double value = Level4();
-    if (token[pos].type == TokenType::Operator && std::get<OperatorType>(token[pos].val) == OperatorType::Pow) {
-      pos++;
-      value = std::pow(value, Level3());
+  double ParsePower() {
+    double value = ParseAtom();
+    if (!End() && Current().IsOperator(OperatorType::Pow)) {
+      Step();
+      double right = ParseUnary();
+      value = std::pow(value, right);
     }
     return value;
   }
 
-  // f(), (), 1.0
-  double Level4() {
-    const Token& current = token[pos];
-
-    // Численный литерал
-    if (current.type == TokenType::Number) {
-      pos++;
-      return std::get<double>(current.val);
-    }
-
-    // Константа
-    if (current.type == TokenType::Constant) {
-      pos++;
-      auto const_name = std::get<std::string_view>(current.val);
-      if (constants.contains(const_name)) {
-        return constants.at(const_name)();
-      }
-      throw std::runtime_error("Неизвестная константа");
-    }
-
-    // Вызов функции
-    if (current.type == TokenType::Function) {
-      pos++;
-      if (token[pos].type != TokenType::Operator || std::get<OperatorType>(token[pos].val) != OperatorType::LeftBracket) {
-        throw std::runtime_error("Ожидается '('");
-      }
-      pos++;
-      double value = Level1();
-      if (token[pos].type != TokenType::Operator || std::get<OperatorType>(token[pos].val) != OperatorType::RightBracket) {
-        throw std::runtime_error("Ожидается ')'");
-      }
-      pos++;
-
-      auto func_name = std::get<std::string_view>(current.val);
-      if (functions.contains(func_name)) {
-        return functions.at(func_name)(value);
-      }
-      throw std::runtime_error("Неизвестная функция");
-    }
-
-    // Скобки
-    if (token[pos].type == TokenType::Operator && std::get<OperatorType>(token[pos].val) == OperatorType::LeftBracket) {
-      pos++;
-      double value = Level1();
-      if (token[pos].type != TokenType::Operator || std::get<OperatorType>(token[pos].val) != OperatorType::RightBracket) {
-        throw std::runtime_error("Ожидается ')'");
-      }
-      pos++;
+  // числа, константы, функции, скобки
+  double ParseAtom() {
+    // число
+    if (Current().type == TokenType::Number) {
+      double value = std::get<double>(Current().val);
+      Step();
       return value;
     }
+
+    // идентификатор:
+    // pi, sin(), cos(), ...
+    if (Current().type == TokenType::Identifier) {
+      auto id = std::get<std::string_view>(Current().val);
+      Step();
+
+      // функция
+      if (!End() && Current().IsOperator(OperatorType::LeftBracket)) {
+        std::vector<double> args;
+
+        Step();  // '('
+
+        if (!Current().IsOperator(OperatorType::RightBracket)) {
+          args.push_back(ParseAddition());
+
+          while (!End() && Current().IsOperator(OperatorType::Comma)) {
+            Step();
+
+            args.push_back(ParseAddition());
+          }
+
+          if (!Current().IsOperator(OperatorType::RightBracket)) {
+            throw Exception("Expected ')'");
+          }
+        }
+        
+        Step();
+
+        if (args.size() == 0) {
+          return f0.at(id)();
+        }
+
+        if (args.size() == 1) {
+          return f1.at(id)(args[0]);
+        }
+
+        if (args.size() == 2) {
+          return f2.at(id)(args[0], args[1]);
+        }
+
+        throw Exception("Wrong number of arguments");
+      }
+
+      // константа
+      return constants.at(id);
+    }
+
+    // выражение в скобках
+    if (Current().IsOperator(OperatorType::LeftBracket)) {
+      Step();
+      double value = ParseAddition();
+      if (!Current().IsOperator(OperatorType::RightBracket)) {
+        throw Exception("Expected ')'");
+      }
+      Step();
+      return value;
+    }
+    throw Exception("Unexpected token");
   }
 
  public:
-  double Parse(const std::vector<Token>& tokens) {
-    pos = 0;
-    this->token = tokens;
-    return Level1();
+  double Parse(const std::vector<Token>& new_tokens) {
+    index = 0;
+    tokens = new_tokens;
+    
+    double value = ParseAddition();
+    if (!End()) {
+      throw Exception("Unexpected token after expression");
+    }
+    return value;
   }
 };

@@ -8,7 +8,15 @@ void Calculator::Run() {
     if (str == "=") {
       break;
     }
-    *os_ << parser_.Parse(lexer_.Tokenize(str)) << "\n\n";
+
+    try {
+      *os_ << parser_.Parse(lexer_.Tokenize(str)) << "\n\n";
+    } catch (const Exception& e) {
+      *os_ << e.colored() << "\n\n";
+    } catch (const std::exception& e) {
+      *os_ << e.what() << "\n\n";
+    }
+
   }
 }
 

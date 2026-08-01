@@ -5,6 +5,12 @@
 #include "History.h"
 #include "Memory.h"
 #include "Importer.h"
+#include "Exception.h"
+
+/*
+-help
+-
+*/
 
 class Calculator {
   Lexer lexer_;

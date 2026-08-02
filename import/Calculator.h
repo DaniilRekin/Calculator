@@ -6,15 +6,12 @@
 #include "Memory.h"
 #include "Importer.h"
 #include "Exception.h"
-
-/*
--help
--
-*/
+#include "Analyzer.h"
 
 class Calculator {
   Lexer lexer_;
-  Parser parser_;
+  Analyzer analyzer_;
+
   History history_;
   Memory memory_;
   Importer import_;

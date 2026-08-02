@@ -7,6 +7,13 @@
 #include "Exception.h"
 #include "Identifiers.h"
 #include "Token.h"
+#include "Constant.h"
+#include "Function.h"
+#include "Storage.h"
+
+/*
+  Парсер выполняющий вычисления
+*/
 
 class Parser {
  private:
@@ -100,73 +107,7 @@ class Parser {
   }
 
   // числа, константы, функции, скобки
-  double ParseAtom() {
-    // число
-    if (Current().type == TokenType::Number) {
-      double value = std::get<double>(Current().val);
-      Step();
-      return value;
-    }
-
-    // идентификатор:
-    // pi, sin(), cos(), ...
-    if (Current().type == TokenType::Identifier) {
-      auto id = std::get<std::string_view>(Current().val);
-      Step();
-
-      // функция
-      if (!End() && Current().IsOperator(OperatorType::LeftBracket)) {
-        std::vector<double> args;
-
-        Step();  // '('
-
-        if (!Current().IsOperator(OperatorType::RightBracket)) {
-          args.push_back(ParseAddition());
-
-          while (!End() && Current().IsOperator(OperatorType::Comma)) {
-            Step();
-
-            args.push_back(ParseAddition());
-          }
-
-          if (!Current().IsOperator(OperatorType::RightBracket)) {
-            throw Exception("Expected ')'");
-          }
-        }
-        
-        Step();
-
-        if (args.size() == 0) {
-          return f0.at(id)();
-        }
-
-        if (args.size() == 1) {
-          return f1.at(id)(args[0]);
-        }
-
-        if (args.size() == 2) {
-          return f2.at(id)(args[0], args[1]);
-        }
-
-        throw Exception("Wrong number of arguments");
-      }
-
-      // константа
-      return constants.at(id);
-    }
-
-    // выражение в скобках
-    if (Current().IsOperator(OperatorType::LeftBracket)) {
-      Step();
-      double value = ParseAddition();
-      if (!Current().IsOperator(OperatorType::RightBracket)) {
-        throw Exception("Expected ')'");
-      }
-      Step();
-      return value;
-    }
-    throw Exception("Unexpected token");
-  }
+  double ParseAtom();
 
  public:
   double Parse(const std::vector<Token>& new_tokens) {

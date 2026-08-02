@@ -73,7 +73,13 @@ add_executable(Calculator
   main.cpp
   src/Calculator.cpp
   src/Lexer.cpp
+  src/Token.cpp
   src/Utils.cpp
+  src/Function.cpp
+  src/Analyzer.cpp
+  src/Parser.cpp
+  src/Constant.cpp
+  src/History.cpp
 )
 
 target_link_libraries(Calculator PRIVATE

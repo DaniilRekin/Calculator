@@ -10,7 +10,21 @@ void Calculator::Run() {
     }
 
     try {
-      *os_ << parser_.Parse(lexer_.Tokenize(str)) << "\n\n";
+      auto t = analyzer_.Analyze(lexer_.Tokenize(str));
+      if (t.has_value()) {
+        *os_ << t.value() << "\n\n";
+      } else {
+        /*
+        for (const auto& c : constants) {
+          std::cout << c << '\n';
+        }
+
+        for (const auto& f : functions) {
+          std::cout << f << '\n';
+        }*/
+
+        std::cout << "\n";
+      }
     } catch (const Exception& e) {
       *os_ << e.colored() << "\n\n";
     } catch (const std::exception& e) {

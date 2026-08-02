@@ -3,9 +3,11 @@
 #include "import/Parser.h"
 #include "import/Calculator.h"
 #include "import/Exception.h"
+#include "import/Function.h"
 
 int main() {
   Calculator calc(std::cin, std::cout);
   calc.Run();
+  
   return 0;
 }

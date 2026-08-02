@@ -41,7 +41,7 @@ static const std::unordered_map<std::string_view, BinaryFunction> f2 = {
   {"max", [](double a, double b) { return std::max(a, b); }}
 };
 
-static const std::unordered_map<std::string_view, double> constants = {
+static const std::unordered_map<std::string_view, double> constants_ = {
   {"pi", std::numbers::pi},
   {"e", std::numbers::e }
 };

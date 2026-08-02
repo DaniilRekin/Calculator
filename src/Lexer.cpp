@@ -12,6 +12,7 @@ Lexer::AnalyzeResult Lexer::TryAsOperator(const std::string_view& part) {
       case '/': return OperatorType::Div;
       case '^': return OperatorType::Pow;
       case ',': return OperatorType::Comma;
+      case '=': return OperatorType::Equal;
       default: return OperatorType::Undefined;
     }
   };

@@ -1,15 +1,14 @@
 #pragma once
 #include <string_view>
 #include <variant>
+#include <vector>
+#include <iostream>
 
 enum class TokenType {
   Number,
   Operator,
   Identifier,
   Undefined,
-
-  Constant [[deprecated("Use Identifier")]] = Identifier,
-  Function [[deprecated("Use Identifier")]] = Identifier
 };
 
 enum class OperatorType {
@@ -21,6 +20,7 @@ enum class OperatorType {
   LeftBracket,  // (
   RightBracket, // )
   Comma,        // ,
+  Equal,        // =
   Undefined
 };
 
@@ -33,6 +33,10 @@ struct Token {
 
  public:
   
+  bool operator==(const Token& other) const {
+    return type == other.type && val == other.val;
+  }
+
   OperatorType GetOperatorType() const {
     return std::get<OperatorType>(val);
   }
@@ -42,3 +46,7 @@ struct Token {
     return type == TokenType::Operator && ((args == std::get<OperatorType>(val)) || ...);
   }
 };
+
+std::ostream& operator<<(std::ostream& os, OperatorType op);
+std::ostream& operator<<(std::ostream& os, const Token& token);
+std::ostream& operator<<(std::ostream& os, const std::vector<Token>& tokens);

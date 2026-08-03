@@ -1,18 +1,15 @@
 #pragma once
 #include <charconv>
-#include <vector>
 #include <string>
 #include <string_view>
+#include <vector>
+
 #include "Token.h"
 #include "Utils.h"
 
 class Lexer {
   struct AnalyzeResult {
-    enum Status {
-      UnknowType,
-      InvalidToken,
-      ValidToken
-    };
+    enum Status { UnknowType, InvalidToken, ValidToken };
 
     Status status = UnknowType;
     size_t shift = 0;

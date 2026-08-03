@@ -20,6 +20,8 @@ class Parser {
   size_t index;
   std::vector<Token> tokens;
 
+  double last = 0.0;
+
   bool End() const { return index >= tokens.size(); }
 
   void Step() { index++; }
@@ -118,6 +120,6 @@ class Parser {
     if (!End()) {
       throw Exception("Unexpected token after expression");
     }
-    return value;
+    return last = value;
   }
 };

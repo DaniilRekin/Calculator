@@ -1,36 +1,38 @@
 #include "../import/Calculator.h"
 
 void Calculator::Run() {
-  std::string str;
+  bool stop = false;
+  std::string input;
 
-  while (true) {
-    std::getline(*is_, str);
-    if (str == "=") {
-      break;
-    }
-
+  while (!stop) {
+    std::getline(*is_, input);
     try {
-      auto t = analyzer_.Analyze(lexer_.Tokenize(str));
-      if (t.has_value()) {
-        *os_ << t.value() << "\n\n";
-      } else {
-        /*
-        for (const auto& c : constants) {
-          std::cout << c << '\n';
+      auto type = input_processor_.Analyze(input);
+
+      // Выполнение консольной команды
+      if (type == InputProcessor::InputType::Command) {
+        auto cmd = cmd_executor_.Analyze(input);
+        stop = (cmd == CommandExecutor::CommandType::Exit);
+        std::cout << cmd_executor_.Execute(cmd);
+      }
+      // Выполнение математической логики
+      else {
+        auto t = analyzer_.Analyze(lexer_.Tokenize(input));
+        if (t.has_value()) {
+          *os_ << t.value() << "\n";
+        } else {
+          //for (const auto& c : constants) { std::cout << c << '\n'; }
+          //for (const auto& f : functions) { std::cout << f << '\n'; }
         }
-
-        for (const auto& f : functions) {
-          std::cout << f << '\n';
-        }*/
-
         std::cout << "\n";
       }
-    } catch (const Exception& e) {
-      *os_ << e.colored() << "\n\n";
-    } catch (const std::exception& e) {
-      *os_ << e.what() << "\n\n";
     }
-
+    // Обработка исключений
+    catch (const Exception& e) {
+      *os_ << "\033[31m\033[1m" << e.colored() << "\033[0m" << "\n\n";
+    } catch (const std::exception& e) {
+      *os_ << "\033[31m\033[1m" << e.what() << "\033[0m" << "\n\n";
+    }
   }
 }
 

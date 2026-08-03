@@ -72,6 +72,9 @@ endif()
 add_executable(Calculator
   main.cpp
   src/Calculator.cpp
+
+  src/InputProcessor.cpp
+  
   src/Lexer.cpp
   src/Token.cpp
   src/Utils.cpp
@@ -80,6 +83,7 @@ add_executable(Calculator
   src/Parser.cpp
   src/Constant.cpp
   src/History.cpp
+  src/CommandExecutor.cpp
 )
 
 target_link_libraries(Calculator PRIVATE

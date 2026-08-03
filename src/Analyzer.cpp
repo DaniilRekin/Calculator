@@ -20,7 +20,7 @@ std::optional<double> Analyzer::Analyze(const std::vector<Token>& tokens) {
   if (std::ranges::contains(tokens, equal)) {
     // Первый токен - это идентификатор сущности
     if (tokens[0].type == TokenType::Identifier) {
-      auto id = std::get<std::string_view>(tokens[0].val);
+      auto id = std::get<std::string>(tokens[0].val);
       if (tokens[1].type == TokenType::Operator) {
         // Если является константой
         if (tokens[1].GetOperatorType() == OperatorType::Equal) {
@@ -35,7 +35,7 @@ std::optional<double> Analyzer::Analyze(const std::vector<Token>& tokens) {
           std::vector<std::string> args;
           while (!tokens[pos].IsOperator(OperatorType::RightBracket)) {
             if (tokens[pos].type == TokenType::Identifier) {
-              auto arg = std::get<std::string_view>(tokens[pos].val);
+              auto arg = std::get<std::string>(tokens[pos].val);
               args.emplace_back(arg);
             } else if (!tokens[pos].IsOperator(OperatorType::Comma)) {
               throw Exception("Некорректное определение параметров функции");
@@ -64,5 +64,7 @@ std::optional<double> Analyzer::Analyze(const std::vector<Token>& tokens) {
     throw Exception("Неизвестная ошибка");
   }
 
-  return Parser{}.Parse(tokens);
+#pragma warning "Костыль"
+  static Parser parser;
+  return parser.Parse(tokens);
 }

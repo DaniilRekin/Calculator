@@ -1,5 +1,8 @@
 #pragma once
 #include <iostream>
+#include "InputProcessor.h"
+#include "CommandExecutor.h"
+
 #include "Lexer.h"
 #include "Parser.h"
 #include "History.h"
@@ -9,6 +12,9 @@
 #include "Analyzer.h"
 
 class Calculator {
+  InputProcessor input_processor_;
+  CommandExecutor cmd_executor_;
+  
   Lexer lexer_;
   Analyzer analyzer_;
 

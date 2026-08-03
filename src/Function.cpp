@@ -22,7 +22,7 @@ double Function::Evaluate(std::vector<double> values) const {
   for (size_t i = 0; i < eval_.size(); i++) {
     bool replaced = false;
     if (eval_[i].type == TokenType::Identifier) {
-      auto pos = std::find(args_.begin(), args_.end(), std::get<std::string_view>(eval_[i].val));
+      auto pos = std::find(args_.begin(), args_.end(), std::get<std::string>(eval_[i].val));
       if (pos != args_.end()) {
         size_t param_idx = pos - args_.begin();
         tokens[i].type = TokenType::Number;
@@ -36,7 +36,8 @@ double Function::Evaluate(std::vector<double> values) const {
     }
   }
 
-  Parser local_parser;
+#pragma warning "Костыль"
+  static Parser local_parser;
   return local_parser.Parse(tokens);
 }
 

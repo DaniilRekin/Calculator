@@ -8,10 +8,19 @@ double Parser::ParseAtom() {
       return value;
     }
 
+    // идентификатор @last
+    if (Current().IsOperator(OperatorType::At)) {
+      Step();
+      if (Current().type == TokenType::Identifier && std::get<std::string>(Current().val) == "last") {
+        Step();
+        return last;
+      }
+    }
+
     // идентификатор:
     // pi, sin(), cos(), ...
     if (Current().type == TokenType::Identifier) {
-      auto id = std::get<std::string_view>(Current().val);
+      auto id = std::get<std::string>(Current().val);
       Step();
 
       // функция
@@ -34,7 +43,7 @@ double Parser::ParseAtom() {
           }
         }
         
-        Step();
+        Step(); // ')'
 
   
 
@@ -62,7 +71,7 @@ double Parser::ParseAtom() {
         return constants_.at(id);
       } else {
         for (const auto& c : constants) {
-          if (c.name_ == id) {
+          if (c.GetName() == id) {
             return c.Evaluate();
           }
         }
@@ -80,5 +89,6 @@ double Parser::ParseAtom() {
       Step();
       return value;
     }
+
     throw Exception("Unexpected token");
   }

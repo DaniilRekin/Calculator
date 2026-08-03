@@ -13,6 +13,7 @@ Lexer::AnalyzeResult Lexer::TryAsOperator(const std::string_view& part) {
       case '^': return OperatorType::Pow;
       case ',': return OperatorType::Comma;
       case '=': return OperatorType::Equal;
+      case '@': return OperatorType::At;
       default: return OperatorType::Undefined;
     }
   };
@@ -55,9 +56,10 @@ Lexer::AnalyzeResult Lexer::TryAsIdentifier(const std::string_view& part) {
     return {AnalyzeResult::UnknowType};
   }
 
+  std::string name{part.begin(), part.begin() + count};
   return {.status = AnalyzeResult::ValidToken,
           .shift = count,
-          .token = {.type = TokenType::Identifier, .val = part.substr(0, count)}};
+          .token = {.type = TokenType::Identifier, .val = name}};
 }
 
 std::vector<Token> Lexer::Tokenize(const std::string& input) {
@@ -70,7 +72,7 @@ std::vector<Token> Lexer::Tokenize(const std::string& input) {
       continue;
     }
 
-    // Определение токена
+    // Определение типа токена, сохранение его внутреннего значения
     AnalyzeResult parsed;
     if ((parsed = TryAsOperator(part), parsed.status == AnalyzeResult::ValidToken) ||
         (parsed = TryAsNumber(part), parsed.status == AnalyzeResult::ValidToken) ||

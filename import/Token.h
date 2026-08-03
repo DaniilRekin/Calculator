@@ -21,6 +21,7 @@ enum class OperatorType {
   RightBracket, // )
   Comma,        // ,
   Equal,        // =
+  At,           // @
   Undefined
 };
 
@@ -29,7 +30,7 @@ struct Token {
   std::variant<
     double,
     OperatorType, 
-    std::string_view> val;
+    std::string> val;
 
  public:
   

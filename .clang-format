@@ -12,3 +12,5 @@ AlignAfterOpenBracket: BlockIndent
 BreakBeforeBraces: Attach
 BinPackArguments: false
 BinPackParameters: false
+
+AllowShortFunctionsOnASingleLine: Empty

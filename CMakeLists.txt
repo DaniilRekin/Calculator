@@ -14,7 +14,6 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 option(ENABLE_ASAN "Enable AddressSanitizer and UndefinedBehaviorSanitizer" ON)
 option(BUILD_TESTS "Build tests" ON)
 
-
 # ---------------------------
 # Compiler warnings
 # ---------------------------
@@ -74,16 +73,22 @@ add_executable(Calculator
   src/Calculator.cpp
 
   src/InputProcessor.cpp
-  
-  src/Lexer.cpp
+  src/CommandExecutor.cpp
+
   src/Token.cpp
   src/Utils.cpp
-  src/Function.cpp
-  src/Analyzer.cpp
+
+  src/Lexer.cpp
   src/Parser.cpp
+  src/Evaluator.cpp
+
   src/Constant.cpp
+  src/Function.cpp
+
+  src/Context.cpp
+
+  src/Evaluator.cpp
   src/History.cpp
-  src/CommandExecutor.cpp
 )
 
 target_link_libraries(Calculator PRIVATE

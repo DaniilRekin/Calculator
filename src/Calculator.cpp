@@ -17,7 +17,7 @@ void Calculator::Run() {
       }
       // Выполнение математической логики
       else {
-        auto t = analyzer_.Analyze(lexer_.Tokenize(input));
+        auto [c, t] = parser_.Parse(lexer_.Tokenize(input), &global_context_);
         if (t.has_value()) {
           *os_ << t.value() << "\n";
         } else {
@@ -39,8 +39,4 @@ void Calculator::Run() {
 void Calculator::SetIO(std::istream& is, std::ostream& os) {
   is_ = &is;
   os_ = &os;
-}
-
-void Calculator::PrintHelp() {
-  *os_ << "Info:";
 }

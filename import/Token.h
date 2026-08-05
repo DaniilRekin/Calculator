@@ -8,6 +8,10 @@ enum class TokenType {
   Number,
   Operator,
   Identifier,
+
+#warning "Неиспользуемый токен"
+  EndOfFile,
+
   Undefined,
 };
 
@@ -19,9 +23,13 @@ enum class OperatorType {
   Pow,          // ^
   LeftBracket,  // (
   RightBracket, // )
+
   Comma,        // ,
   Equal,        // =
   At,           // @
+  Colon,        // :
+  Dollar,       // $
+  Tilde,        // ~
   Undefined
 };
 
@@ -33,21 +41,34 @@ struct Token {
     std::string> val;
 
  public:
-  
-  bool operator==(const Token& other) const {
-    return type == other.type && val == other.val;
-  }
+  bool operator==(const Token& other) const = default;
 
-  OperatorType GetOperatorType() const {
-    return std::get<OperatorType>(val);
-  }
+ public:
+  bool IsNumber() const;
+  bool IsOperator() const;
+  bool IsIdentifier() const;
 
-  template <class... Args>
-  bool IsOperator(Args... args) const {
-    return type == TokenType::Operator && ((args == std::get<OperatorType>(val)) || ...);
-  }
+ public:
+  double GetDouble() const;
+  OperatorType GetOperatorType() const;
+  const std::string& GetString() const;
+
+ public:
+  template <std::same_as<OperatorType>... Ops>
+  requires (sizeof...(Ops) > 0)
+  bool OperatorMatches(Ops... args) const;
+
+  template <std::convertible_to<std::string_view>... Strs>
+  requires (sizeof...(Strs) > 0)
+  bool IdentifierMatches(Strs... args) const;
+
+ public:
+  static OperatorType CharToOperatorType(char);
+  static char OperatorTypeToChar(OperatorType);
 };
 
 std::ostream& operator<<(std::ostream& os, OperatorType op);
 std::ostream& operator<<(std::ostream& os, const Token& token);
 std::ostream& operator<<(std::ostream& os, const std::vector<Token>& tokens);
+
+#include "../src/Token.tpp"

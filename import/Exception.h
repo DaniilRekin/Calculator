@@ -1,6 +1,7 @@
 #pragma once
 #include <string>
 #include <stdexcept>
+#include <format>
 
 class Exception : public std::runtime_error {
   std::string colored_string_;

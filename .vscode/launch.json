@@ -1,26 +1,25 @@
 {
-    "version": "0.2.0",
-    "configurations": [
+    "name": "Debug Calculator",
+    "type": "cppdbg",
+    "request": "launch",
+
+    "preLaunchTask": "Build",
+
+    "program": "${workspaceFolder}/build/Calculator",
+    "cwd": "${workspaceFolder}",
+
+    "stopAtEntry": false,
+
+    "MIMode": "gdb",
+    "miDebuggerPath": "/usr/bin/gdb",
+
+    "externalConsole": false,
+    "console": "integratedTerminal",
+
+    "setupCommands": [
         {
-            "name": "Debug C++ WSL",
-            "type": "cppdbg",
-            "request": "launch",
-            "program": "${workspaceFolder}/build/Calculator",
-            "args": [],
-            "stopAtEntry": true,
-            "cwd": "${workspaceFolder}",
-            "MIMode": "gdb",
-            "miDebuggerPath": "/usr/bin/gdb",
-            "externalConsole": false,
-            "console": "integratedTerminal",
-            "setupCommands": [
-                {
-                    "description": "Enable pretty printing",
-                    "text": "-enable-pretty-printing",
-                    "ignoreFailures": true
-                }
-            ],
-            "launchCompleteCommand": "exec-run"
+        "text": "set startup-with-shell off",
+        "ignoreFailures": true
         }
     ]
 }

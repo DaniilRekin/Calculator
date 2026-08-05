@@ -2,31 +2,29 @@
 #include <iostream>
 #include "InputProcessor.h"
 #include "CommandExecutor.h"
-
 #include "Lexer.h"
 #include "Parser.h"
+#include "Evaluator.h"
+#include "Context.h"
 #include "History.h"
-#include "Memory.h"
 #include "Importer.h"
+#include "Exporter.h"
 #include "Exception.h"
-#include "Analyzer.h"
 
 class Calculator {
   InputProcessor input_processor_;
   CommandExecutor cmd_executor_;
-  
+  GlobalContext  global_context_;
   Lexer lexer_;
-  Analyzer analyzer_;
+  Parser parser_;
+  Evaluator evaluator_;
 
   History history_;
-  Memory memory_;
-  Importer import_;
+  Importer importer_;
+  Exporter exporter_;
 
   std::istream* is_;
   std::ostream* os_;
-
- private:
-  void PrintHelp();
 
  public:
   Calculator(std::istream& is = std::cin, std::ostream& os = std::cout) : is_(&is), os_(&os) {

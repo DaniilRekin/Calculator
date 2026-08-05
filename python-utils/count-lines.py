@@ -20,3 +20,4 @@ def count_lines(directory):
 
 if __name__ == "__main__":
     print("\nВсего строк:", count_lines("../import") + count_lines("../src"))
+    input()

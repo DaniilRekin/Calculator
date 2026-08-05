@@ -1,9 +1,15 @@
 #include "../import/Function.h"
 
-std::vector<Function> functions;
+Function::Function() {
+  local_context_ = std::make_unique<LocalContext>();
+  local_context_->CreateBasic();
+}
 
 Function::Function(std::string name, std::vector<std::string> args, std::vector<Token> eval)
-  : name_(name), args_(args), eval_(eval) {}
+    : name_(name), args_(args), eval_(eval) {
+  local_context_ = std::make_unique<LocalContext>();
+  local_context_->CreateBasic();
+}
 
 const std::string& Function::GetName() const {
   return name_;
@@ -36,27 +42,41 @@ double Function::Evaluate(std::vector<double> values) const {
     }
   }
 
-#pragma warning "Костыль"
-  static Parser local_parser;
-  return local_parser.Parse(tokens);
+  Evaluator evaluator;
+  double value = evaluator.Parse(tokens, global_context_, local_context_.get());
+
+  local_context_->AssignProperty("last", value);
+  local_context_->AssignProperty("min", std::min(value, local_context_->GetProperty("min")));
+  local_context_->AssignProperty("max", std::max(value, local_context_->GetProperty("max")));
+  local_context_->AssignProperty("step", std::max(value, local_context_->GetProperty("step") + 1));
+
+  return value;
+}
+
+void Function::BindContext(GlobalContext* global_context) {
+  global_context_ = global_context;
+}
+
+LocalContext& Function::GetContext() {
+  return *local_context_;
 }
 
 std::ostream& operator<<(std::ostream& os, const Function& obj) {
-    os << "Name: " << obj.name_ << '\n';
+  os << "Name: " << obj.name_ << '\n';
 
-    os << "Args: [";
-    for (size_t i = 0; i < obj.args_.size(); ++i) {
-      if (i > 0) os << ", ";
-      os << '"' << obj.args_[i] << '"';
-    }
-    os << "]\n";
-
-    os << "Eval: [";
-    for (size_t i = 0; i < obj.eval_.size(); ++i) {
-      if (i > 0) os << ", ";
-      os << obj.eval_[i];
-    }
-    os << "]";
-
-    return os;
+  os << "Args: [";
+  for (size_t i = 0; i < obj.args_.size(); ++i) {
+    if (i > 0) os << ", ";
+    os << '"' << obj.args_[i] << '"';
   }
+  os << "]\n";
+
+  os << "Eval: [";
+  for (size_t i = 0; i < obj.eval_.size(); ++i) {
+    if (i > 0) os << ", ";
+    os << obj.eval_[i];
+  }
+  os << "]";
+
+  return os;
+}

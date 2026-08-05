@@ -14,6 +14,9 @@ Lexer::AnalyzeResult Lexer::TryAsOperator(const std::string_view& part) {
       case ',': return OperatorType::Comma;
       case '=': return OperatorType::Equal;
       case '@': return OperatorType::At;
+      case ':': return OperatorType::Colon;
+      case '$': return OperatorType::Dollar;
+      case '~': return OperatorType::Tilde;
       default: return OperatorType::Undefined;
     }
   };

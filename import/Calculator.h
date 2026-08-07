@@ -12,6 +12,8 @@
 #include "Exception.h"
 
 class Calculator {
+#warning "Исправить"
+ public:
   InputProcessor input_processor_;
   CommandExecutor cmd_executor_;
   GlobalContext  global_context_;

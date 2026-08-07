@@ -33,12 +33,12 @@ Parser::ParseResult Parser::Parse(const std::vector<Token>& tokens, GlobalContex
     if (tokens[0].IsIdentifier()) {
       const std::string& name = tokens[0].GetString();
 
-      std::cout << __LINE__ << '\n';
+      // std::cout << __LINE__ << '\n';
 
       // _id_ =
       if (tokens[1].OperatorMatches(OperatorType::Equal)) {
 
-      std::cout << __LINE__ << '\n';
+      // std::cout << __LINE__ << '\n';
 
 
         std::vector<Token> eval(tokens.begin() + 2, tokens.end());
@@ -67,13 +67,13 @@ Parser::ParseResult Parser::Parse(const std::vector<Token>& tokens, GlobalContex
         // _id_(x, y, z) :
         else if (tokens[position].OperatorMatches(OperatorType::Colon)) {
 
-          std::cout << __LINE__ << '\n';
+          // std::cout << __LINE__ << '\n';
           
 
           position++;
           // _id_(x, y, z) : @
           if (tokens[position].OperatorMatches(OperatorType::At)) {
-            std::cout << __LINE__ << '\n';
+            // std::cout << __LINE__ << '\n';
 
 
             position++;
@@ -82,7 +82,7 @@ Parser::ParseResult Parser::Parse(const std::vector<Token>& tokens, GlobalContex
             if (tokens[position].IdentifierMatches("last", "ans", "min", "max", "avg", "step")) {
               const std::string& property = tokens[position].GetString();
 
-              std::cout << __LINE__ << '\n';
+              // std::cout << __LINE__ << '\n';
 
               position++;
               // _id_(x, y, z) : @last =

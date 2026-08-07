@@ -11,9 +11,6 @@
 #include "import/Parser.h"
 
 int main() {
-  std::cout << "\033]50;Font;size=28\a" << std::endl;
-  std::cout << "Текст с измененным размером" << std::endl;
-
   Calculator calc(std::cin, std::cout);
   calc.Run();
 

@@ -1,22 +1,29 @@
 #pragma once
 #include <iostream>
-#include "InputProcessor.h"
+
 #include "CommandExecutor.h"
-#include "Lexer.h"
-#include "Parser.h"
-#include "Evaluator.h"
 #include "Context.h"
+#include "Evaluator.h"
+#include "Exception.h"
+#include "Exporter.h"
 #include "History.h"
 #include "Importer.h"
-#include "Exporter.h"
-#include "Exception.h"
+#include "InputProcessor.h"
+#include "Lexer.h"
+#include "Parser.h"
+#include "Utils.h"
 
 class Calculator {
 #warning "Исправить"
  public:
+  std::istream* is_;
+  std::ostream* os_;
+
+  Settings settings_;
+
+  GlobalContext global_context_;
   InputProcessor input_processor_;
-  CommandExecutor cmd_executor_;
-  GlobalContext  global_context_;
+  CommandExecutor command_executor_;
   Lexer lexer_;
   Parser parser_;
   Evaluator evaluator_;
@@ -25,11 +32,10 @@ class Calculator {
   Importer importer_;
   Exporter exporter_;
 
-  std::istream* is_;
-  std::ostream* os_;
-
  public:
-  Calculator(std::istream& is = std::cin, std::ostream& os = std::cout) : is_(&is), os_(&os) {
+  Calculator(std::istream& is = std::cin, std::ostream& os = std::cout)
+     : is_(&is), os_(&os), global_context_(), command_executor_(*os_, global_context_, settings_)
+  {
   }
 
  public:

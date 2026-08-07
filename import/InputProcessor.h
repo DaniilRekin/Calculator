@@ -1,12 +1,11 @@
 #pragma once
-
-#include <string>
-#include <unordered_map>
+#include <cstring>
 #include <stdexcept>
-#include <format>
+#include <string>
+#include <string_view>
 
 class InputProcessor {
  public:
-  enum class InputType { Command, Statement };
+  enum class InputType { Comment, Command, Statement };
   InputType Analyze(const std::string& input);
 };

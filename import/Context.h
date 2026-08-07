@@ -22,7 +22,8 @@ class GlobalContext {
   static const std::unordered_map<std::string, BinaryFunction> f2;
   static const std::unordered_map<std::string, double> c0;
 
- private:
+#warning "Исправить"
+ public:
   std::unordered_map<std::string, double> properties;
   std::unordered_map<std::string, double> variables;
   std::unordered_map<std::string, Constant> constants;
@@ -56,6 +57,10 @@ class GlobalContext {
   double ExecuteFunction(const std::string& func, std::vector<double> args);
 
  public:
+  void ResetProperties();
+  void FreeAll();
+
+ public:
   LocalContext& GetFunctionContext(const std::string& func);
 
  public:
@@ -68,6 +73,8 @@ class LocalContext {
  public:
   void AssignProperty(const std::string& p, double value);
   double GetProperty(const std::string& p);
+
+  void ResetProperties();
 
   void CreateBasic();
 };

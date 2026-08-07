@@ -2,26 +2,7 @@
 #include "../import/Exception.h"
 
 Lexer::AnalyzeResult Lexer::TryAsOperator(const std::string_view& part) {
-  auto charTable = [](char ch) {
-    switch (ch) {
-      case '(': return OperatorType::LeftBracket;
-      case ')': return OperatorType::RightBracket;
-      case '+': return OperatorType::Plus;
-      case '-': return OperatorType::Minus;
-      case '*': return OperatorType::Mult;
-      case '/': return OperatorType::Div;
-      case '^': return OperatorType::Pow;
-      case ',': return OperatorType::Comma;
-      case '=': return OperatorType::Equal;
-      case '@': return OperatorType::At;
-      case ':': return OperatorType::Colon;
-      case '$': return OperatorType::Dollar;
-      case '~': return OperatorType::Tilde;
-      default: return OperatorType::Undefined;
-    }
-  };
-
-  OperatorType op = charTable(part.front());
+  OperatorType op = Token::CharToOperatorType(part.front());
   if (op == OperatorType::Undefined) {
     return {AnalyzeResult::UnknowType};
   }
@@ -49,8 +30,8 @@ Lexer::AnalyzeResult Lexer::TryAsNumber(const std::string_view& part) {
 
 Lexer::AnalyzeResult Lexer::TryAsIdentifier(const std::string_view& part) {
   size_t count = 0;
-  if (IsAlpha(part.front())) {
-    while (IsIdentifierChar(part[count])) {
+  if (ch::is_identifier_first_char(part.front())) {
+    while (ch::is_identifier_char(part[count])) {
       count++;
     }
   }
@@ -70,7 +51,7 @@ std::vector<Token> Lexer::Tokenize(const std::string& input) {
   std::string_view part = input;
   while (part.size()) {
     // Игнорирование пробелов
-    if (IsSpace(part.front())) {
+    if (ch::isspace(part.front())) {
       part.remove_prefix(1);
       continue;
     }
@@ -81,7 +62,7 @@ std::vector<Token> Lexer::Tokenize(const std::string& input) {
         (parsed = TryAsNumber(part), parsed.status == AnalyzeResult::ValidToken) ||
         (parsed = TryAsIdentifier(part), parsed.status == AnalyzeResult::ValidToken)) {
       part.remove_prefix(parsed.shift);
-      tokens.push_back(parsed.token);
+      tokens.push_back(std::move(parsed.token));
     } else {
       throw Exception("Undefined token: \n" + input, input.size() - part.size() + 18);
     }

@@ -8,23 +8,29 @@ void Calculator::Run() {
     std::getline(*is_, input);
     try {
       auto type = input_processor_.Analyze(input);
-
       // Выполнение консольной команды
       if (type == InputProcessor::InputType::Command) {
-        auto cmd = cmd_executor_.Analyze(input);
+        auto cmd = command_executor_.Execute(input);
         stop = (cmd == CommandExecutor::CommandType::Exit);
-        std::cout << cmd_executor_.Execute(cmd);
       }
       // Выполнение математической логики
-      else {
+      else if (type == InputProcessor::InputType::Statement) {
+        auto tk = lexer_.Tokenize(input);
+        std::cout << __LINE__ << '\n';
+        std::cout.flush();
+        //std::cout << tk << '\n';
+        std::cout << __LINE__ << '\n';
+        std::cout.flush();
         auto [c, t] = parser_.Parse(lexer_.Tokenize(input), &global_context_);
         if (t.has_value()) {
-          *os_ << t.value() << "\n";
+          *os_ << Format(t.value(), settings_.precision) << "\n";
         } else {
           //for (const auto& c : constants) { std::cout << c << '\n'; }
           //for (const auto& f : functions) { std::cout << f << '\n'; }
         }
         std::cout << "\n";
+      } else {
+        // Введён комментарий...
       }
     }
     // Обработка исключений

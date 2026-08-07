@@ -3,15 +3,14 @@
 #include <variant>
 #include <vector>
 #include <iostream>
+#include <stdexcept>
 
 enum class TokenType {
   Number,
   Operator,
   Identifier,
-
-#warning "Неиспользуемый токен"
-  EndOfFile,
-
+  // #warning "Неиспользуемый токен"
+  // EndOfFile,
   Undefined,
 };
 

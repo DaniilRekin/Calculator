@@ -39,7 +39,7 @@ OperatorType Token::CharToOperatorType(char ch) {
     case ':': return OperatorType::Colon;
     case '$': return OperatorType::Dollar;
     case '~': return OperatorType::Tilde;
-    default: throw std::runtime_error("");
+    default: return OperatorType::Undefined;
   }
 }
 
@@ -58,7 +58,7 @@ char Token::OperatorTypeToChar(OperatorType op) {
     case OperatorType::Colon: return ':';
     case OperatorType::Dollar: return '$';
     case OperatorType::Tilde: return '~';
-    default: throw std::exception();
+    default: throw std::runtime_error("");
   }
 }
 

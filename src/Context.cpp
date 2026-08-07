@@ -158,6 +158,21 @@ double GlobalContext::ExecuteFunction(const std::string& func, std::vector<doubl
   throw std::runtime_error(std::to_string(__LINE__) + " - - - " + __FILE__);
 }
 
+void GlobalContext::ResetProperties() {
+  for (auto& [key, value] : properties) {
+    value = 0.0;
+  }
+  for (auto& [name, func] : functions) {
+    func.local_context_->ResetProperties();
+  }
+}
+
+void GlobalContext::FreeAll() {
+  constants.clear();
+  functions.clear();
+  variables.clear();
+}
+
 LocalContext& GlobalContext::GetFunctionContext(const std::string& func) {
   return functions.at(func).GetContext();
 }
@@ -175,6 +190,12 @@ void LocalContext::AssignProperty(const std::string& p, double value) {
 
 double LocalContext::GetProperty(const std::string& p) {
   return properties.at(p);
+}
+
+void LocalContext::ResetProperties() {
+  for (auto& [key, value] : properties) {
+    value = 0.0;
+  }
 }
 
 void LocalContext::CreateBasic() {
